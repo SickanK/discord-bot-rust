@@ -32,7 +32,7 @@ fn main() {
     let rstr: String = base64::encode(&d);
     let connector = TlsConnector::new().unwrap();
     let string = String::from(
-        format!("GET /?v=9 HTTP/1.1\r\nHost: gateway.discord.gg\r\nAuthorization: Bot ODQ3OTQ5NTAwNTQxODI5MTMw.YLFggw.4moFWlMQgiX6nc5Q2PMRPCENv-8\r\nConnection: Upgrade\r\nUpgrade: websocket\r\nSec-WebSocket-Version: 13\r\nSec-WebSocket-Key: {}\r\n\r\n", &rstr)
+        format!("GET /?v=9 HTTP/1.1\r\nHost: gateway.discord.gg\r\nAuthorization: Bot \r\nConnection: Upgrade\r\nUpgrade: websocket\r\nSec-WebSocket-Version: 13\r\nSec-WebSocket-Key: {}\r\n\r\n", &rstr)
     );
 
     let stream = TcpStream::connect("gateway.discord.gg:443").unwrap();
