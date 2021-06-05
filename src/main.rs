@@ -6,6 +6,9 @@ use std::io::prelude::*;
 use std::net::TcpStream;
 use std::thread;
 
+pub mod http_request;
+use self::http_request::HttpRequest;
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct GatewayEventName {
     #[serde(rename = "op")]
@@ -44,11 +47,10 @@ fn main() {
         let mut buf = [0; 1024];
         stream.read(&mut buf).unwrap();
         if remove_zero(String::from_utf8_lossy(&buf).to_string()).is_ok() {
-            let g: GatewayEventName =
-                serde_json::from_str(
-                    remove_zero(String::from_utf8_lossy(&buf).to_string()).ok()
-                );
-            println!("{:?}", g);
+            println!(
+                "{:?}",
+                remove_zero(String::from_utf8_lossy(&buf).to_string())
+            );
         };
     });
 
