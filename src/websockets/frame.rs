@@ -62,12 +62,17 @@ impl WSFrame {
                 _ => 8,
             };
 
+            if byte_len == 2 {
+                second_byte |= 126;
+            } else {
+                second_byte |= 127;
+            }
+
             for _ in 0..byte_len {
                 shift -= 8;
                 bytes.push(((self.payload_length >> shift) & 0xff) as u8);
             }
 
-            println!("{:?}", bytes);
             req.push(second_byte);
             req.append(&mut bytes);
         }
@@ -76,41 +81,18 @@ impl WSFrame {
         req.append(&mut mask.to_vec());
 
         let payload_buffer = self.payload.as_bytes();
-        let mut payload_buffer = payload_buffer.to_vec();
-        apply_mask(&mut payload_buffer, mask);
+        let mut payload_buffer = mask_data(mask, &payload_buffer);
         req.append(&mut payload_buffer);
 
         req
     }
 }
 
-pub fn apply_mask(buf: &mut [u8], mask: [u8; 4]) {
-    apply_mask_fast32(buf, mask)
-}
-
-fn apply_mask_fallback(buf: &mut [u8], mask: [u8; 4]) {
-    for (i, byte) in buf.iter_mut().enumerate() {
-        *byte ^= mask[i & 3];
+fn mask_data(mask: [u8; 4], data: &[u8]) -> Vec<u8> {
+    let mut out = Vec::with_capacity(data.len());
+    let zip_iter = data.iter().zip(mask.iter().cycle());
+    for (&buf_item, &key_item) in zip_iter {
+        out.push(buf_item ^ key_item);
     }
-}
-
-pub fn apply_mask_fast32(buf: &mut [u8], mask: [u8; 4]) {
-    let mask_u32 = u32::from_ne_bytes(mask);
-
-    let (mut prefix, words, mut suffix) = unsafe { buf.align_to_mut::<u32>() };
-    apply_mask_fallback(&mut prefix, mask);
-    let head = prefix.len() & 3;
-    let mask_u32 = if head > 0 {
-        if cfg!(target_endian = "big") {
-            mask_u32.rotate_left(8 * head as u32)
-        } else {
-            mask_u32.rotate_right(8 * head as u32)
-        }
-    } else {
-        mask_u32
-    };
-    for word in words.iter_mut() {
-        *word ^= mask_u32;
-    }
-    apply_mask_fallback(&mut suffix, mask_u32.to_ne_bytes());
+    out
 }

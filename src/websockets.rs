@@ -1,18 +1,18 @@
 use base64;
-use native_tls::TlsConnector;
 use rand;
-use std::io::prelude::*;
-use std::net::TcpStream;
 use std::sync::mpsc::{channel, Receiver, Sender};
+use std::sync::Arc;
 use std::thread;
 
 use crate::util::binary_to_decimal;
 
 use self::frame::WSFrame;
 use self::opcode::RFC6455Opcode;
+use self::socket::Socket;
 
 pub mod frame;
 pub mod opcode;
+pub mod socket;
 
 pub struct WebSocket<'a> {
     uri: &'a str,
@@ -20,33 +20,26 @@ pub struct WebSocket<'a> {
 
 impl<'a> WebSocket<'a> {
     pub fn new(uri: &'a str) -> Self {
-        WSFrame::new(
-            true,
-            true,
-            RFC6455Opcode::Text,
-            20000,
-            String::from("{lesgo: or not}"),
-        )
-        .encode();
-
         WebSocket { uri }
     }
 
     pub fn initialize(&mut self) -> (Sender<WSFrame>, Receiver<WSFrame>) {
-        let connector = TlsConnector::new().unwrap();
-        let tcp_stream = TcpStream::connect(format!("{}:443", &self.uri)).unwrap();
-        let mut stream = connector.connect(&self.uri, tcp_stream).unwrap();
+        let socket = Arc::new(Socket::bind(&self.uri, 443, true).unwrap());
+        let socket_read = Arc::clone(&socket);
+        let socket_write = Arc::clone(&socket);
 
         let upgrade_request_string = create_upgrade_string(&self.uri);
-        stream.write(upgrade_request_string.as_bytes()).unwrap();
+        let mut output_stream = socket.output_stream.lock().unwrap();
+        output_stream
+            .write(upgrade_request_string.as_bytes())
+            .unwrap();
 
-        // Send to main with sender and they receive through receiver
         let (recv_sender, recv_receiver) = channel::<WSFrame>();
-        let (send_sender, send_receiver) = channel::<WSFrame>();
         thread::spawn(move || {
+            let mut input_stream = socket_read.input_stream.lock().unwrap();
             loop {
                 let mut buf = [0; 8192];
-                stream.read(&mut buf).unwrap();
+                input_stream.read(&mut buf).unwrap();
 
                 if String::from_utf8_lossy(&buf).contains("101 Switching Protocols") {
                     // do more stuff prob, upgrade succesful
@@ -55,9 +48,15 @@ impl<'a> WebSocket<'a> {
 
                 let frame: WSFrame = Self::frame_parser(buf.to_vec());
                 recv_sender.send(frame).unwrap();
+            }
+        });
 
+        let (send_sender, send_receiver) = channel::<WSFrame>();
+        thread::spawn(move || {
+            let mut output_stream = socket_write.output_stream.lock().unwrap();
+            loop {
                 let mut request = send_receiver.recv().unwrap();
-                stream.write(&request.encode()).unwrap();
+                output_stream.write(&request.encode()).unwrap();
             }
         });
 
@@ -88,7 +87,7 @@ impl<'a> WebSocket<'a> {
         }
 
         frame.drain(payload_length + pre_payload_length..frame.len());
-        let payload = String::from_utf8_lossy(&frame[2..]);
+        let payload = String::from_utf8_lossy(&frame[pre_payload_length..]);
 
         WSFrame::new(
             fin,
