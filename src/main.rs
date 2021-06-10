@@ -1,6 +1,7 @@
 pub mod discord;
 pub mod util;
 pub mod websockets;
+use serde::{Deserialize, Serialize};
 use std::sync::{atomic::AtomicU32, Arc, Mutex};
 
 use discord::{
@@ -14,7 +15,17 @@ extern crate serde_derive;
 
 //use self::websockets::get_length;
 
+#[derive(Serialize, Deserialize)]
+struct Settings {
+    bot_token: String,
+}
+
 fn main() {
+    let mut settings = config::Config::default();
+    settings.merge(config::File::with_name("settings")).unwrap();
+
+    let settings = settings.try_into::<Settings>().unwrap();
+
     let mut ws: WebSocket = WebSocket::new("gateway.discord.gg");
     let (tx, rx) = ws.initialize();
     let sequence: Arc<Mutex<AtomicU32>> = Arc::new(Mutex::new(AtomicU32::new(0)));
@@ -22,7 +33,7 @@ fn main() {
     let identify_payload_struct = GatewayIdentify {
         op: DiscordOpcode::Identify.get_u8(),
         d: GatewayIdentifyData {
-            token: String::from("ODQ3OTQ5NTAwNTQxODI5MTMw.YLFggw.HGeiZMVTs0-g687a7bGYCpeRCGw"),
+            token: settings.bot_token,
             intents: 513,
             properties: GatewayIdentifyDataProperties {
                 os: String::from("linux"),

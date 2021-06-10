@@ -47,6 +47,7 @@ impl<'a> WebSocket<'a> {
                 }
 
                 let frame: WSFrame = Self::frame_parser(buf.to_vec());
+                println!("{:?}", frame);
                 recv_sender.send(frame).unwrap();
             }
         });
