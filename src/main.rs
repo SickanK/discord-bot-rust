@@ -27,7 +27,7 @@ fn main() {
     let settings = settings.try_into::<Settings>().unwrap();
 
     let mut ws: WebSocket = WebSocket::new("gateway.discord.gg");
-    let (tx, rx) = ws.initialize();
+    let tx = ws.initialize();
     let sequence: Arc<Mutex<AtomicU32>> = Arc::new(Mutex::new(AtomicU32::new(0)));
 
     let identify_payload_struct = GatewayIdentify {
@@ -56,7 +56,7 @@ fn main() {
     tx.send(identify_frame).unwrap();
 
     loop {
-        let frame = rx.recv().unwrap();
+        let frame = ws.recv_receiver.recv().unwrap();
         handle_response(frame, sequence.clone(), tx.clone())
     }
 }

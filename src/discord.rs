@@ -9,7 +9,7 @@ use std::sync::Arc;
 use std::sync::Mutex;
 
 use self::{opcode::DiscordOpcode, payload::GatewayHeartbeat};
-use crate::discord::dispatch::DiscordDispatch;
+use crate::discord::dispatch::GatewayEvents;
 use crate::discord::opcode::handle_heartbeat;
 use crate::{
     discord::opcode::Opcode,
@@ -30,18 +30,19 @@ pub fn heartbeat_frame(seq: &AtomicU32) -> WSFrame {
 //
 
 pub fn handle_response(frame: WSFrame, seq: Arc<Mutex<AtomicU32>>, tx: Sender<WSFrame>) {
+    //println!("--->>>> {:?}", &frame.payload);
     let opcode: Opcode = serde_json::from_str(&frame.payload).unwrap();
 
     match DiscordOpcode::from_u8(opcode.op) {
-        DiscordOpcode::Dispatch => DiscordDispatch::from_frame(frame).unwrap().run(),
-        DiscordOpcode::Heartbeat => todo!(),
-        DiscordOpcode::Identify => todo!(),
-        DiscordOpcode::PresenceUpdate => todo!(),
-        DiscordOpcode::VoiceStateUpdate => todo!(),
-        DiscordOpcode::Resume => todo!(),
-        DiscordOpcode::Reconnect => todo!(),
-        DiscordOpcode::RequestGuildMembers => todo!(),
-        DiscordOpcode::InvalidSession => todo!(),
+        DiscordOpcode::Dispatch => GatewayEvents::from_frame(frame).unwrap().run(),
+        DiscordOpcode::Heartbeat => todo!("heartbeat"),
+        DiscordOpcode::Identify => todo!("identify"),
+        DiscordOpcode::PresenceUpdate => todo!("presence update"),
+        DiscordOpcode::VoiceStateUpdate => todo!("voice state upadte"),
+        DiscordOpcode::Resume => todo!("resume"),
+        DiscordOpcode::Reconnect => todo!("reconnect"),
+        DiscordOpcode::RequestGuildMembers => todo!("request guild members"),
+        DiscordOpcode::InvalidSession => todo!("invalid session"),
         DiscordOpcode::Hello => handle_heartbeat(frame, seq.clone(), tx.clone()),
         DiscordOpcode::HeartbeatACK => println!("Pog heartbeat"),
     }

@@ -16,14 +16,21 @@ pub mod socket;
 
 pub struct WebSocket<'a> {
     uri: &'a str,
+    recv_sender: Sender<WSFrame>,
+    pub recv_receiver: Receiver<WSFrame>,
 }
 
 impl<'a> WebSocket<'a> {
     pub fn new(uri: &'a str) -> Self {
-        WebSocket { uri }
+        let (recv_sender, recv_receiver) = channel::<WSFrame>();
+        WebSocket {
+            recv_sender,
+            recv_receiver,
+            uri,
+        }
     }
 
-    pub fn initialize(&mut self) -> (Sender<WSFrame>, Receiver<WSFrame>) {
+    pub fn initialize(&mut self) -> Sender<WSFrame> {
         let socket = Arc::new(Socket::bind(&self.uri, 443, true).unwrap());
         let socket_read = Arc::clone(&socket);
         let socket_write = Arc::clone(&socket);
@@ -34,21 +41,38 @@ impl<'a> WebSocket<'a> {
             .write(upgrade_request_string.as_bytes())
             .unwrap();
 
-        let (recv_sender, recv_receiver) = channel::<WSFrame>();
+        let sender = self.recv_sender.clone();
         thread::spawn(move || {
             let mut input_stream = socket_read.input_stream.lock().unwrap();
-            loop {
-                let mut buf = [0; 8192];
-                input_stream.read(&mut buf).unwrap();
+            let mut buf = vec![0; 1024];
+            input_stream.read(&mut buf).unwrap();
 
-                if String::from_utf8_lossy(&buf).contains("101 Switching Protocols") {
-                    // do more stuff prob, upgrade succesful
-                    continue;
+            if String::from_utf8_lossy(&buf).contains("HTTP") {
+                // do more stuff prob, upgrade succesful
+            }
+
+            loop {
+                let mut buf = vec![0; 16];
+                input_stream.read(&mut buf).unwrap();
+                let mut rframe;
+
+                let (frame, pre_payload_length): (WSFrame, usize) = Self::frame_parser(buf.clone());
+                rframe = frame;
+                let content_length = pre_payload_length + rframe.payload_length;
+
+                while content_length > buf.len() {
+                    let mut temp_buf = vec![0; content_length - buf.len()];
+                    let read_length = input_stream.read(&mut temp_buf).unwrap();
+
+                    temp_buf.drain(read_length..temp_buf.len());
+
+                    buf.append(&mut temp_buf);
+
+                    let (frame_temp, _): (WSFrame, usize) = Self::frame_parser(buf.clone());
+                    rframe = frame_temp;
                 }
 
-                let frame: WSFrame = Self::frame_parser(buf.to_vec());
-                println!("{:?}", frame);
-                recv_sender.send(frame).unwrap();
+                sender.send(rframe).unwrap();
             }
         });
 
@@ -61,10 +85,10 @@ impl<'a> WebSocket<'a> {
             }
         });
 
-        return (send_sender, recv_receiver);
+        return send_sender;
     }
 
-    fn frame_parser(mut frame: Vec<u8>) -> WSFrame {
+    fn frame_parser(mut frame: Vec<u8>) -> (WSFrame, usize) {
         if (frame.first().unwrap() & 0x70) != 0x00 {
             // throw error stuff as there seems to be some error
         }
@@ -87,15 +111,22 @@ impl<'a> WebSocket<'a> {
             payload_length = binary_to_decimal(binary.concat().as_str()) as usize;
         }
 
-        frame.drain(payload_length + pre_payload_length..frame.len());
+        let content_length = payload_length + pre_payload_length;
+        if content_length < frame.len() {
+            frame.drain(content_length..frame.len());
+        }
+
         let payload = String::from_utf8_lossy(&frame[pre_payload_length..]);
 
-        WSFrame::new(
-            fin,
-            mask,
-            RFC6455Opcode::from_u8(opcode),
-            payload_length as usize,
-            payload.to_string(),
+        (
+            WSFrame::new(
+                fin,
+                mask,
+                RFC6455Opcode::from_u8(opcode),
+                payload_length as usize,
+                payload.to_string(),
+            ),
+            pre_payload_length,
         )
     }
 }
