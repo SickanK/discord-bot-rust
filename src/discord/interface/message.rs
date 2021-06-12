@@ -1,9 +1,6 @@
-pub mod application;
 pub mod attachment;
 pub mod channel_mention;
-pub mod channel_type;
 pub mod embed;
-pub mod emoji;
 pub mod guild_member;
 pub mod interaction;
 pub mod message_activity;
@@ -13,18 +10,18 @@ pub mod reaction;
 pub mod role;
 pub mod sticker;
 
-use crate::discord::snowflake::{self, Snowflake};
+use crate::discord::snowflake::Snowflake;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 use self::{
-    application::Application, attachment::Attachement, channel_mention::ChannelMention,
-    embed::Embed, guild_member::GuildMember, interaction::Interaction,
-    message_activity::MessageActivity, message_component::MessageComponent,
-    message_reference::MessageReference, reaction::Reaction, role::Role, sticker::Sticker,
+    attachment::Attachement, channel_mention::ChannelMention, embed::Embed,
+    guild_member::GuildMember, interaction::Interaction, message_activity::MessageActivity,
+    message_component::MessageComponent, message_reference::MessageReference, reaction::Reaction,
+    role::Role, sticker::Sticker,
 };
 
-use super::user::User;
+use super::{application::Application, user::User};
 
 #[derive(Serialize, Deserialize)]
 pub struct Message {

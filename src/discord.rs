@@ -12,7 +12,7 @@ use std::sync::Mutex;
 
 use self::payload::{GatewayIdentify, GatewayIdentifyData, GatewayIdentifyDataProperties};
 use self::{opcode::DiscordOpcode, payload::GatewayHeartbeat};
-use crate::discord::dispatch::GatewayEvents;
+use crate::discord::dispatch::{GatewayEvent, Stuff};
 use crate::discord::opcode::handle_heartbeat;
 use crate::{
     discord::opcode::Opcode,
@@ -67,7 +67,11 @@ pub fn handle_response(frame: WSFrame, seq: Arc<Mutex<AtomicU32>>, tx: Sender<WS
     let opcode: Opcode = serde_json::from_str(&frame.payload).unwrap();
 
     match DiscordOpcode::from_u8(opcode.op) {
-        DiscordOpcode::Dispatch => GatewayEvents::from_frame(frame).unwrap().run(),
+        DiscordOpcode::Dispatch => Stuff {
+            gte: GatewayEvent::from_frame(frame.clone()).unwrap(),
+            frame,
+        }
+        .run(),
         DiscordOpcode::Heartbeat => todo!("heartbeat"),
         DiscordOpcode::Identify => todo!("identify"),
         DiscordOpcode::PresenceUpdate => todo!("presence update"),

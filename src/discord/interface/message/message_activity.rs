@@ -10,8 +10,8 @@ pub struct MessageActivity {
 
 #[derive(FromPrimitive, Serialize, Deserialize)]
 pub enum ChannelType {
-    JOIN = 1,
-    SPECTATE = 2,
-    LISTEN = 3,
-    JOIN_REQUEST = 5,
+    Join = 1,
+    Spectate = 2,
+    Listen = 3,
+    JoinRequest = 5,
 }

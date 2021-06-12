@@ -1,6 +1,4 @@
-use crate::discord::snowflake::Snowflake;
-
-use super::channel_type::ChannelType;
+use crate::discord::{interface::channel::channel_type::ChannelType, snowflake::Snowflake};
 
 use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize)]

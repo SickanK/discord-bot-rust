@@ -2,9 +2,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::discord::{interface::user::User, snowflake::Snowflake};
 
-use super::role::Role;
+use super::message::role::Role;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Emoji {
     id: Option<Snowflake>,
     name: Option<String>,

@@ -1,4 +1,4 @@
-use crate::websockets::frame::WSFrame;
+use crate::{discord::interface::guild::Guild, websockets::frame::WSFrame};
 use serde::{Deserialize, Serialize};
 use serde_json;
 use std::str::FromStr;
@@ -8,8 +8,8 @@ struct Type {
     t: String,
 }
 
-#[derive(EnumString)]
-pub enum GatewayEvents {
+#[derive(EnumString, PartialEq)]
+pub enum GatewayEvent {
     #[strum(serialize = "HELLO")]
     Hello,
     #[strum(serialize = "READY")]
@@ -110,13 +110,32 @@ pub enum GatewayEvents {
     WebhocksUpdate,
 }
 
-impl GatewayEvents {
-    pub fn run(&self) {
-        println!("Just ran!")
-    }
-
+impl GatewayEvent {
     pub fn from_frame(frame: WSFrame) -> Result<Self, String> {
         let dispatch_type: Type = serde_json::from_str(&frame.payload).unwrap();
-        Ok(GatewayEvents::from_str(&dispatch_type.t).unwrap())
+        Ok(GatewayEvent::from_str(&dispatch_type.t).unwrap())
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct tst {
+    t: Option<String>,
+    s: Option<usize>,
+    op: Option<usize>,
+    d: Option<Guild>,
+}
+
+pub struct Stuff {
+    pub gte: GatewayEvent,
+    pub frame: WSFrame,
+}
+
+impl Stuff {
+    pub fn run(&self) {
+        if self.gte == GatewayEvent::GuildCreate {
+            println!("{}", &self.frame.payload);
+            let test: tst = serde_json::from_str(&self.frame.payload).unwrap();
+            println!("{:?}", test);
+        }
     }
 }

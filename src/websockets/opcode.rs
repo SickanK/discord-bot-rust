@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum RFC6455Opcode {
     Continuation,
     Text,

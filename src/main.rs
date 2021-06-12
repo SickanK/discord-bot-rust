@@ -16,8 +16,6 @@ extern crate bitflags;
 
 extern crate serde_derive;
 
-//use self::websockets::get_length;
-
 #[derive(Serialize, Deserialize)]
 struct Settings {
     bot_token: String,

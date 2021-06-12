@@ -1,7 +1,7 @@
 use super::opcode::RFC6455Opcode;
 use rand;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct WSFrame {
     pub fin: bool,
     pub mask: bool,

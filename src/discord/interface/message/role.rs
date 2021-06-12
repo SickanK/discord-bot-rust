@@ -1,7 +1,7 @@
 use crate::discord::snowflake::Snowflake;
 
 use serde::{Deserialize, Serialize};
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Role {
     id: Snowflake,
     name: String,
@@ -14,7 +14,7 @@ pub struct Role {
     tags: Option<RoleTags>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct RoleTags {
     bot_id: Option<Snowflake>,
     integration_id: Option<Snowflake>,

@@ -1,7 +1,8 @@
 use num_derive::FromPrimitive;
 use serde::{Deserialize, Serialize};
 
-use super::emoji::Emoji;
+use crate::discord::interface::emoji::Emoji;
+
 #[derive(Serialize, Deserialize)]
 pub struct MessageComponent {
     #[serde(rename = "type")]

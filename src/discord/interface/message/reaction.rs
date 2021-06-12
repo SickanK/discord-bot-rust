@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::emoji::Emoji;
+use crate::discord::interface::emoji::Emoji;
 
 #[derive(Serialize, Deserialize)]
 pub struct Reaction {

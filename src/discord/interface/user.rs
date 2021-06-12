@@ -2,7 +2,7 @@ use crate::discord::snowflake::Snowflake;
 use num_derive::FromPrimitive;
 
 use serde::{Deserialize, Serialize};
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct User {
     id: Snowflake,
     username: String,
@@ -39,7 +39,7 @@ pub struct UserFlags: u32 {
     }
 }
 
-#[derive(FromPrimitive, Serialize, Deserialize)]
+#[derive(FromPrimitive, Serialize, Deserialize, Debug)]
 pub enum PremiumType {
     None = 0,
     NitroClassic,

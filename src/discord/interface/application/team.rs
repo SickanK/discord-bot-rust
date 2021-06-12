@@ -13,14 +13,14 @@ pub struct Team {
 
 #[derive(Serialize, Deserialize)]
 pub struct TeamMember {
-    membership_state: MembershipState,
-    permissions: Vec<String>,
+    membership_state: u8,
+    permissions: Option<Vec<String>>,
     team_id: Snowflake,
     user: User,
 }
 
 #[derive(FromPrimitive, Serialize, Deserialize)]
 pub enum MembershipState {
-    INVITED = 1,
-    ACCEPTED = 2,
+    Invited = 1,
+    Accepted = 2,
 }
