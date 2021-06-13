@@ -1,5 +1,7 @@
 pub mod team_member;
 
+use crate::discord::snowflake::Snowflake;
+
 use self::team_member::TeamMember;
 
 #[derive(Serialize, Deserialize, Debug)]
