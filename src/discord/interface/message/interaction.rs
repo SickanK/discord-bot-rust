@@ -1,19 +1,11 @@
-use num_derive::FromPrimitive;
-use serde::{Deserialize, Serialize};
-
+pub mod interaction_type;
 use crate::discord::{interface::user::User, snowflake::Snowflake};
-#[derive(Serialize, Deserialize)]
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Interaction {
     id: Snowflake,
     #[serde(rename = "type")]
-    interaction_type: InteractionType,
+    interaction_type: u8,
     name: String,
     user: User,
-}
-
-#[derive(FromPrimitive, Serialize, Deserialize)]
-pub enum InteractionType {
-    Ping = 1,
-    ApplicationCommand = 2,
-    MessageComponent = 3,
 }

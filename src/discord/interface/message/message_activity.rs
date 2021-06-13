@@ -1,17 +1,8 @@
-use num_derive::FromPrimitive;
-use serde::{Deserialize, Serialize};
+pub mod channel_type;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct MessageActivity {
     #[serde(rename = "type")]
-    activity_type: ChannelType,
+    activity_type: u8,
     party_id: Option<String>,
-}
-
-#[derive(FromPrimitive, Serialize, Deserialize)]
-pub enum ChannelType {
-    Join = 1,
-    Spectate = 2,
-    Listen = 3,
-    JoinRequest = 5,
 }

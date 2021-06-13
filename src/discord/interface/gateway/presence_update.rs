@@ -1,5 +1,3 @@
-use serde::{Deserialize, Serialize};
-
 use crate::discord::{interface::user::User, snowflake::Snowflake};
 
 use super::{activity::Activity, client_status::ClientStatus};

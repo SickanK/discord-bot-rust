@@ -28,7 +28,6 @@ pub fn heartbeat_frame(seq: &AtomicU32) -> WSFrame {
     let payload = serde_json::to_string(&gateway_heartbeat).unwrap();
 
     seq.store(1, Ordering::SeqCst);
-
     WSFrame::new(true, true, RFC6455Opcode::Binary, payload.len(), payload)
 }
 

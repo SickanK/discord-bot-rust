@@ -1,8 +1,6 @@
-use serde::{Deserialize, Serialize};
-
 use crate::discord::snowflake::Snowflake;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Attachement {
     id: Snowflake,
     filename: String,

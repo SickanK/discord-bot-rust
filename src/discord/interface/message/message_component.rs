@@ -1,32 +1,17 @@
-use num_derive::FromPrimitive;
-use serde::{Deserialize, Serialize};
+pub mod button_style;
+pub mod message_component_type;
 
 use crate::discord::interface::emoji::Emoji;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct MessageComponent {
     #[serde(rename = "type")]
-    message_component_type: MessageComponentType,
-    style: Option<ButtonStyle>,
+    message_component_type: u8,
+    style: Option<u8>,
     label: Option<String>,
     emoji: Option<Emoji>,
     custom_id: Option<String>,
     url: Option<String>,
     disabled: Option<bool>,
     components: Option<Vec<MessageComponent>>,
-}
-
-#[derive(FromPrimitive, Serialize, Deserialize)]
-pub enum MessageComponentType {
-    ActionRow = 1,
-    Button = 2,
-}
-
-#[derive(FromPrimitive, Serialize, Deserialize)]
-pub enum ButtonStyle {
-    Primary = 1,
-    Secondary = 2,
-    Success = 3,
-    Danger = 4,
-    Link = 5,
 }

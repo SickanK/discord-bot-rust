@@ -1,6 +1,5 @@
 use crate::discord::snowflake::Snowflake;
 
-use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Role {
     id: Snowflake,

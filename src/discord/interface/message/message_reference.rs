@@ -1,7 +1,5 @@
-use serde::{Deserialize, Serialize};
-
 use crate::discord::snowflake::Snowflake;
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct MessageReference {
     message_id: Option<Snowflake>,
     channel_id: Option<Snowflake>,

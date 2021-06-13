@@ -1,14 +1,14 @@
 use num::ToPrimitive;
 #[derive(ToPrimitive, FromPrimitive, Debug)]
-pub enum VideoQualityMode {
-    Auto = 1,
-    Full = 2,
+pub enum MembershipState {
+    Invited = 1,
+    Accepted = 2,
 }
 
-struct VideoQualityModeVisitor;
+struct MembershipStateVisitor;
 
-impl<'de> serde::de::Visitor<'de> for VideoQualityModeVisitor {
-    type Value = VideoQualityMode;
+impl<'de> serde::de::Visitor<'de> for MembershipStateVisitor {
+    type Value = MembershipState;
 
     fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
         formatter.write_str("u16")
@@ -20,12 +20,12 @@ impl<'de> serde::de::Visitor<'de> for VideoQualityModeVisitor {
     {
         match num::FromPrimitive::from_u16(v) {
             Some(f) => Ok(f),
-            None => Err(E::custom("Failed to convert to VideoQualityMode")),
+            None => Err(E::custom("Failed to convert to MembershipState")),
         }
     }
 }
 
-impl serde::ser::Serialize for VideoQualityMode {
+impl serde::ser::Serialize for MembershipState {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
@@ -34,11 +34,11 @@ impl serde::ser::Serialize for VideoQualityMode {
     }
 }
 
-impl<'de> serde::de::Deserialize<'de> for VideoQualityMode {
-    fn deserialize<D>(deserializer: D) -> Result<VideoQualityMode, D::Error>
+impl<'de> serde::de::Deserialize<'de> for MembershipState {
+    fn deserialize<D>(deserializer: D) -> Result<MembershipState, D::Error>
     where
         D: serde::de::Deserializer<'de>,
     {
-        deserializer.deserialize_u16(VideoQualityModeVisitor)
+        deserializer.deserialize_u16(MembershipStateVisitor)
     }
 }

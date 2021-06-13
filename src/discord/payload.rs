@@ -1,5 +1,3 @@
-use serde::{Deserialize, Serialize};
-
 #[derive(Serialize, Deserialize)]
 pub struct GatewayHeartbeat {
     pub op: u8,

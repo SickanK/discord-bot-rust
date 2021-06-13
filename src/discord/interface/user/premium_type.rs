@@ -1,14 +1,14 @@
 use num::ToPrimitive;
 #[derive(ToPrimitive, FromPrimitive, Debug)]
-pub enum VideoQualityMode {
-    Auto = 1,
-    Full = 2,
+pub enum PremiumType {
+    None = 0,
+    NitroClassic = 1,
+    Nitro = 2,
 }
+struct PremiumTypeVisitor;
 
-struct VideoQualityModeVisitor;
-
-impl<'de> serde::de::Visitor<'de> for VideoQualityModeVisitor {
-    type Value = VideoQualityMode;
+impl<'de> serde::de::Visitor<'de> for PremiumTypeVisitor {
+    type Value = PremiumType;
 
     fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
         formatter.write_str("u16")
@@ -20,12 +20,12 @@ impl<'de> serde::de::Visitor<'de> for VideoQualityModeVisitor {
     {
         match num::FromPrimitive::from_u16(v) {
             Some(f) => Ok(f),
-            None => Err(E::custom("Failed to convert to VideoQualityMode")),
+            None => Err(E::custom("Failed to convert to PremiumType")),
         }
     }
 }
 
-impl serde::ser::Serialize for VideoQualityMode {
+impl serde::ser::Serialize for PremiumType {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
@@ -34,11 +34,11 @@ impl serde::ser::Serialize for VideoQualityMode {
     }
 }
 
-impl<'de> serde::de::Deserialize<'de> for VideoQualityMode {
-    fn deserialize<D>(deserializer: D) -> Result<VideoQualityMode, D::Error>
+impl<'de> serde::de::Deserialize<'de> for PremiumType {
+    fn deserialize<D>(deserializer: D) -> Result<PremiumType, D::Error>
     where
         D: serde::de::Deserializer<'de>,
     {
-        deserializer.deserialize_u16(VideoQualityModeVisitor)
+        deserializer.deserialize_u16(PremiumTypeVisitor)
     }
 }

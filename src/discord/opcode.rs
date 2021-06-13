@@ -1,7 +1,6 @@
 use super::{heartbeat_frame, payload::GatewayHello};
 use crate::websockets::frame::WSFrame;
 use core::time;
-use serde::{Deserialize, Serialize};
 use std::{
     sync::{atomic::AtomicU32, mpsc::Sender, Arc, Mutex},
     thread,

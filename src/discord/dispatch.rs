@@ -1,5 +1,4 @@
-use crate::{discord::interface::guild::Guild, websockets::frame::WSFrame};
-use serde::{Deserialize, Serialize};
+use crate::{discord::interface::message::Message, websockets::frame::WSFrame};
 use serde_json;
 use std::str::FromStr;
 
@@ -8,7 +7,7 @@ struct Type {
     t: String,
 }
 
-#[derive(EnumString, PartialEq)]
+#[derive(EnumString, PartialEq, Debug)]
 pub enum GatewayEvent {
     #[strum(serialize = "HELLO")]
     Hello,
@@ -84,6 +83,8 @@ pub enum GatewayEvent {
     InviteDelete,
     #[strum(serialize = "MESSAGE_CREATE")]
     MessageCreate,
+    #[strum(serialize = "MESSAGE_UPDATE")]
+    MessageUpdate,
     #[strum(serialize = "MESSAGE_DELETE")]
     MessageDelete,
     #[strum(serialize = "MESSAGE_DELETE_BULK")]
@@ -112,17 +113,18 @@ pub enum GatewayEvent {
 
 impl GatewayEvent {
     pub fn from_frame(frame: WSFrame) -> Result<Self, String> {
+        println!("{}", &frame.payload);
         let dispatch_type: Type = serde_json::from_str(&frame.payload).unwrap();
         Ok(GatewayEvent::from_str(&dispatch_type.t).unwrap())
     }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct tst {
-    t: Option<String>,
-    s: Option<usize>,
-    op: Option<usize>,
-    d: Option<Guild>,
+pub struct DiscordEvent<A> {
+    t: String,
+    s: Option<u32>,
+    op: Option<u8>,
+    d: A,
 }
 
 pub struct Stuff {
@@ -132,10 +134,12 @@ pub struct Stuff {
 
 impl Stuff {
     pub fn run(&self) {
-        if self.gte == GatewayEvent::GuildCreate {
-            println!("{}", &self.frame.payload);
-            let test: tst = serde_json::from_str(&self.frame.payload).unwrap();
+        if self.gte == GatewayEvent::MessageCreate {
+            //println!("{}", &self.frame.payload);
+            let test: DiscordEvent<Message> = serde_json::from_str(&self.frame.payload).unwrap();
             println!("{:?}", test);
+        } else {
+            println!("{:?}", &self.gte);
         }
     }
 }

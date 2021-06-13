@@ -1,5 +1,3 @@
-use serde::{Deserialize, Serialize};
-
 use super::welcome_screen_channel::WelcomeScreenChannel;
 
 #[derive(Serialize, Deserialize, Debug)]

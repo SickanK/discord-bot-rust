@@ -6,7 +6,6 @@ pub mod video_quality_mode;
 
 use crate::discord::snowflake::Snowflake;
 use chrono::{DateTime, Utc};
-use serde::{Deserialize, Serialize};
 
 use self::{
     channel_type::ChannelType, overwrite::Overwrite, thread_member::ThreadMember,
@@ -19,7 +18,7 @@ use super::user::User;
 pub struct Channel {
     id: Snowflake,
     #[serde(rename = "type")]
-    channel_type: u8,
+    channel_type: ChannelType,
     guild_id: Option<Snowflake>,
     position: Option<u32>,
     permission_overwrites: Option<Vec<Overwrite>>,
@@ -37,7 +36,7 @@ pub struct Channel {
     parent_id: Option<Snowflake>,
     last_pin_timestamp: Option<DateTime<Utc>>,
     rtc_region: Option<String>,
-    video_quality_mode: Option<u8>,
+    video_quality_mode: Option<VideoQualityMode>,
     message_count: Option<u16>,
     member_count: Option<u16>,
     thread_metadata: Option<ThreadMetadata>,

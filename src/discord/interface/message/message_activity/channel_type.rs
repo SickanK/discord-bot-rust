@@ -1,14 +1,15 @@
 use num::ToPrimitive;
-#[derive(ToPrimitive, FromPrimitive, Debug)]
-pub enum VideoQualityMode {
-    Auto = 1,
-    Full = 2,
+#[derive(ToPrimitive, FromPrimitive)]
+pub enum ChannelType {
+    Join = 1,
+    Spectate = 2,
+    Listen = 3,
+    JoinRequest = 5,
 }
+struct ChannelTypeVisitor;
 
-struct VideoQualityModeVisitor;
-
-impl<'de> serde::de::Visitor<'de> for VideoQualityModeVisitor {
-    type Value = VideoQualityMode;
+impl<'de> serde::de::Visitor<'de> for ChannelTypeVisitor {
+    type Value = ChannelType;
 
     fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
         formatter.write_str("u16")
@@ -20,12 +21,12 @@ impl<'de> serde::de::Visitor<'de> for VideoQualityModeVisitor {
     {
         match num::FromPrimitive::from_u16(v) {
             Some(f) => Ok(f),
-            None => Err(E::custom("Failed to convert to VideoQualityMode")),
+            None => Err(E::custom("Failed to convert to ChannelType")),
         }
     }
 }
 
-impl serde::ser::Serialize for VideoQualityMode {
+impl serde::ser::Serialize for ChannelType {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
@@ -34,11 +35,11 @@ impl serde::ser::Serialize for VideoQualityMode {
     }
 }
 
-impl<'de> serde::de::Deserialize<'de> for VideoQualityMode {
-    fn deserialize<D>(deserializer: D) -> Result<VideoQualityMode, D::Error>
+impl<'de> serde::de::Deserialize<'de> for ChannelType {
+    fn deserialize<D>(deserializer: D) -> Result<ChannelType, D::Error>
     where
         D: serde::de::Deserializer<'de>,
     {
-        deserializer.deserialize_u16(VideoQualityModeVisitor)
+        deserializer.deserialize_u16(ChannelTypeVisitor)
     }
 }

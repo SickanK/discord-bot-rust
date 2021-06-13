@@ -1,4 +1,5 @@
 pub mod discord;
+pub mod http;
 pub mod util;
 pub mod websockets;
 use serde::{Deserialize, Serialize};
@@ -10,11 +11,12 @@ use websockets::WebSocket;
 extern crate strum;
 #[macro_use]
 extern crate strum_macros;
-
 #[macro_use]
 extern crate bitflags;
-
+#[macro_use]
 extern crate serde_derive;
+#[macro_use]
+extern crate num_derive;
 
 #[derive(Serialize, Deserialize)]
 struct Settings {

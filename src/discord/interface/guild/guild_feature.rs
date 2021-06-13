@@ -1,5 +1,3 @@
-use serde::{Deserialize, Serialize};
-
 #[derive(Serialize, Deserialize, EnumString, Debug)]
 pub enum GuildFeature {
     #[strum(serialize = "ANIMATED_ICON")]

@@ -1,5 +1,3 @@
-use serde::{Deserialize, Serialize};
-
 use crate::discord::snowflake::Snowflake;
 
 #[derive(Serialize, Deserialize, Debug)]
