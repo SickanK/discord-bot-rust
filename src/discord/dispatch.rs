@@ -137,7 +137,7 @@ impl Stuff {
         if self.gte == GatewayEvent::MessageCreate {
             //println!("{}", &self.frame.payload);
             let test: DiscordEvent<Message> = serde_json::from_str(&self.frame.payload).unwrap();
-            println!("{:?}", test);
+        //println!("{:?}", test);
         } else {
             println!("{:?}", &self.gte);
         }

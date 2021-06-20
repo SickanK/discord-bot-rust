@@ -1,5 +1,5 @@
 bitflags! {
-pub struct UserFlags: u32 {
+pub struct UserFlags: u64 {
         const NONE = 0;
         const DISCORD_EMPLOYE = 1 << 0;
         const PARTNERED_SERVER_OWNER = 1 << 1;
@@ -25,7 +25,7 @@ impl<'de> serde::de::Visitor<'de> for UserFlagsVisitor {
         formatter.write_str("bits")
     }
 
-    fn visit_u32<E>(self, v: u32) -> Result<Self::Value, E>
+    fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
     {
@@ -41,7 +41,7 @@ impl serde::ser::Serialize for UserFlags {
     where
         S: serde::Serializer,
     {
-        serializer.serialize_u32(self.bits())
+        serializer.serialize_u64(self.bits())
     }
 }
 

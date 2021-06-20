@@ -1,5 +1,5 @@
 bitflags! {
-pub struct ApplicationFlags: u32 {
+pub struct ApplicationFlags: u64 {
     const GATEWAY_PRESENCE = 1 << 12;
     const GATEWAY_PRESENCE_LIMITED = 1 << 13;
     const GATEWAY_GUILD_MEMBERS = 1 << 14;
@@ -17,7 +17,7 @@ impl<'de> serde::de::Visitor<'de> for ApplicationFlagsVisitor {
         formatter.write_str("bits")
     }
 
-    fn visit_u32<E>(self, v: u32) -> Result<Self::Value, E>
+    fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
     {
@@ -33,7 +33,7 @@ impl serde::ser::Serialize for ApplicationFlags {
     where
         S: serde::Serializer,
     {
-        serializer.serialize_u32(self.bits())
+        serializer.serialize_u64(self.bits())
     }
 }
 

@@ -1,5 +1,5 @@
 bitflags! {
-pub struct SystemChannelFlags: u32 {
+pub struct SystemChannelFlags: u64 {
     const SUPPRESS_JOIN_NOTIFICATIONS = 1 << 0;
     const SUPPRESS_PREMIUM_SUBSCRIPTIONS = 1 << 1;
     const SUPPRESS_GUILD_REMINDER_NOTIFICATIONS = 1 << 2;
@@ -14,7 +14,7 @@ impl<'de> serde::de::Visitor<'de> for SystemChannelFlagsVisitor {
         formatter.write_str("bits")
     }
 
-    fn visit_u32<E>(self, v: u32) -> Result<Self::Value, E>
+    fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
     {
@@ -30,7 +30,7 @@ impl serde::ser::Serialize for SystemChannelFlags {
     where
         S: serde::Serializer,
     {
-        serializer.serialize_u32(self.bits())
+        serializer.serialize_u64(self.bits())
     }
 }
 

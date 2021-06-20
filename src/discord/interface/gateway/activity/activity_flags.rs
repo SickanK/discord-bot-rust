@@ -1,5 +1,5 @@
 bitflags! {
-pub struct ActivityFlags: u32 {
+pub struct ActivityFlags: u64 {
 const INSTANCE = 1 << 0;
 const JOIN = 1 << 1;
 const SPECTATE = 1 << 2;
@@ -17,7 +17,7 @@ impl<'de> serde::de::Visitor<'de> for ActivityFlagsVisitor {
         formatter.write_str("bits")
     }
 
-    fn visit_u32<E>(self, v: u32) -> Result<Self::Value, E>
+    fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
     {
@@ -33,7 +33,7 @@ impl serde::ser::Serialize for ActivityFlags {
     where
         S: serde::Serializer,
     {
-        serializer.serialize_u32(self.bits())
+        serializer.serialize_u64(self.bits())
     }
 }
 

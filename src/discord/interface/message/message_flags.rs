@@ -1,5 +1,6 @@
 bitflags! {
-pub struct MessageFlags: u32 {
+pub struct MessageFlags: u64 {
+const NONE = 0;
 const CROSSPOSTED = 1 << 0;
 const IS_CROSSPOST = 1 << 1;
 const SUPPRESS_EMBEDS = 1 << 2;
@@ -19,7 +20,7 @@ impl<'de> serde::de::Visitor<'de> for MessageFlagsVisitor {
         formatter.write_str("bits")
     }
 
-    fn visit_u32<E>(self, v: u32) -> Result<Self::Value, E>
+    fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
     {
@@ -35,7 +36,7 @@ impl serde::ser::Serialize for MessageFlags {
     where
         S: serde::Serializer,
     {
-        serializer.serialize_u32(self.bits())
+        serializer.serialize_u64(self.bits())
     }
 }
 

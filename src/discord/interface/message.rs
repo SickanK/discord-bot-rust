@@ -52,7 +52,7 @@ pub struct Message {
     application: Option<Application>,
     application_id: Option<Snowflake>,
     message_reference: Option<MessageReference>,
-    flags: Option<MessageFlags>,
+    flags: Option<u16>,
     stickers: Option<Vec<Sticker>>,
     referenced_message: Option<Box<Message>>,
     interaction: Option<Interaction>,
